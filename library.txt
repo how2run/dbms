@@ -1,0 +1,62 @@
+SQL>create table student(stud_no number(5) primary key,stud_name varchar2(15));
+SQL>desc student
+
+SQL>insert into student values(&stud_no,’&stud_name’);
+SQL>select * from student;
+
+SQL>create table membership(mem_no number(5) primary key,stud_no number(5) references student(stud)no));
+SQL>dsec membership;
+
+insert into membership values(5440,510)
+SQL>select * from membership;
+SQL>create table book(book_no number(5) primary key,book_name varchar2(20),author varchar2(2));
+SQL>desc book;
+SQL>insert into book values(&book_no,’&book_name’,’&author’);
+SQL>select * from book;
+SQL>create table lss_rec(iss_no number primary key,iss_date date,mem_no number(5) references membership(mem_no),book_no number(5) references book(book_no));
+
+SQL>desc iss_rec;
+SQL>select * from iss_rec;
+SQL> select s.studname, m.memno 
+from student s, membership m where m.studno=s.studno;
+
+//d
+SQL> select i.issno, s.studname, b.bookname from iss_rec i, membership m, student s, book b
+         >where i.memno=m.memno and m.studno=s.studno and i.bookno=b.bookno i.issdate=’2021-04-21’;
+//e
+SQL> select s.studno, count(i.bookno)            
+         from student s, membership m, book b, iss_rec  i
+         where s.studno=m.studno and b.bookno=i.bookno and i.mem_no=m.mem_no
+         group by s.studno;
+//f
+SQL> select bookname from book where bookno in 
+    (select bookno from iss_rec where
+     memno in(select memno from membership where
+    studno in(select studno from student where studno=5)));
+//g
+sql> create view List as (select i.issue_no, i.issue_date, b.book_name, s.studen
+t_name from studentlib s, issue_rec i, book b, membership m where m.student_no=s
+.student_no and b.book_no=i.book_no and i.memno=m.memno);
+Sql> select * from List;
+
+CREATE OR REPLACE PROCEDURE get_student(p_student_no in NUMBER )
+AS
+v_name student.student_name%TYPE;
+BEGIN
+SELECT student_name
+INTO v_name
+FROM STUDENT
+WHERE student_no=p_student_no;
+DBMS_OUTPUT.PUT_LINE('STUDENT_NO:'|| p_student_no);
+DBMS_OUTPUT.PUT_LINE('STUDENT_NAME:'|| v_name);
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+DBMS_OUTPUT.PUT_LINE('STUDENT_NO:'||p_student_no||'NOT FOUND');
+END;
+
+SQL>EXECUTE GET_STUDENT(6);
+
+sql>BEGIN
+get_student(1);
+END;
+
