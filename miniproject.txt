@@ -1,0 +1,67 @@
+create table student (rollno char(10) primary key, name varchar(30) not null, semester char not null, degree varchar(5), contact_no char(10), guide_no integer);
+create table guide (guide_name varchar(20) not null, guide_no integer primary key, guide_research_domain varchar(30), contact_no char(10), email_id varchar(30));
+create table project1 (project_no integer primary key, project_title varchar(30) not null, project_domain varchar(20) not null, start_date date, guide_no integer references guide(guide_no) on delete cascade); 
+create table group1 (group_code integer, rollno char(10) references student1(rollno) on delete cascade);
+create table project_group (group_code integer, project_no integer references project1(project_no) on delete cascade, number_of_students integer);
+insert into student1 values('1nt14cs001','sameer','5','b.e','9876543210',11);
+insert into student1 values('1nt14cs002','sushanth','5','b.e','9876543210',11);
+insert into student1 values('1nt14cs003','joyce','5','b.e','999944455',12);
+insert into student1 values('1nt14cs004','sanjay','5','b.e','9879879870',12);
+insert into student1 values('1nt14cs005','rahim','5','b.e','9988776654',13);
+insert into student1 values('1nt14cs006','ramkrishna','5','b.e','9876543333',13);
+insert into guide values('rama krishna', 11,'cloud compting security','9998887776','ramkrishnak@gmail.com');
+insert into guide values('kavitha sooda', 12,'computer networks','9998880000','kavithasooda@gmail.com');
+insert into guide values('nagraj s r', 13,'vanets','9990007776','nagraj@gmail.com');
+insert into project1 values(123,'enterprise cloud adoption','cloud computing','20-oct-2016',11);
+insert into project1 values(124,'data analtyics in health care','big data','20-oct-2016',11);
+insert into project1 values(125,'performance in vanets','cloud computing','20-oct-2016',13);
+insert into project1 values(126,'cognitive networks','computer networks','20-oct-2016',12);
+insert into group1 values(1,'1nt14cs001');
+insert into group1 values(1,'1nt14cs002');
+insert into group1 values(1,'1nt14cs003');
+insert into group1 values(2,'1nt14cs004');
+insert into group1 values(2,'1nt14cs005');
+insert into group1 values(2,'1nt14cs006');
+select * from group1;
+insert into project_group values(1,123,3);
+insert into project_group values(1,124,3);
+insert into project_group values(2,125,3);
+insert into project_group values(2,126,3);
+
+//c//
+ select guide_name,count(*)
+           from guide g, project1 p
+          where g.guide_no=p.guide_no 
+          group by guide_name
+          having count(*)>1
+//d//
+select project_no, project_title, guide_name
+from project1, guide
+where project1.guide_no= guide.guide_no and 
+project1.project_domain='database'
+
+//e//
+update guide set guide_name=’abhishek’
+where guide_no in ( select guide_no
+                                            from student
+                                            where rollno=’1nt14cs001’)
+
+after update:
+update guide set guide_name='sathish',guide_no=14
+where guide_no in ( select guide_no
+                                            from student1
+                                            where rollno='1nt14cs001')
+//f//
+alter table student1 add foreign key (guide_no)  references guide(guide_no) on delete cascade;
+sql>delete  from guide where guide_no=12
+
+then insert new student record with guide_no 15
+insert into student1 values('1nt14cs003','joyce','5','b.e','999944455',15)
+
+insert into student1 values('1nt14cs004','sanjay','5','b.e','9879879870',15)
+
+//g//
+sql>create view student_project as
+select  name,guide_name,project_title
+from student1,guide,project1
+where project1.guide_no=guide.guide_no
