@@ -1,0 +1,47 @@
+//a//
+SQL>create table employee (fname char(10), minit char, lname char(10), ssn number primary key, bdate date, address char(30), sex char, salary number, superssn number references employee (ssn), dno number);
+SQL>create table department (dname char(20), dnumber number primary key, mgrssn number references employee (ssn), mgrstartdate date);
+SQL>alter table employee add foreign key (dno) references department (dnumber);
+SQL>create table dept_locations (dnumber number references department (dnumber),dlocation char(15));
+SQL>alter  table dept_locations add primary key (dnumber, dlocation);
+SQL>create table project (pname char(20), pnumber number primary key, plocation char(15), dnum number);
+SQL>alter table project add foreign key (dnum, plocation) references dept_locations (dnumber, dlocation);
+SQL>create table works_on (essn number references employee (ssn), pno number references project (pnumber), hours number);
+SQL>create table dependent (essn number references employee (ssn), dependent_name char(10), sex char, bdate date, relationship char(10));
+SQL>alter table dependent add primary key (essn, dependent_name);
+SQL> desc employee
+SQL> desc department;
+SQL> desc dept_locations;
+SQL> desc project;
+SQL> desc works_on;
+SQL> desc dependent;
+
+//c//
+SQL>  SELECT E.Fname, E.Lname, 1.1 * E.Salary AS Increased_sal
+            FROM EMPLOYEE AS E, WORKS_ON AS W, PROJECT AS P
+           WHERE E.Ssn=W.Essn AND W.Pno=P.Pnumber AND   P.Pname=‘ProductX’;
+
+//d//
+ SQL> SELECT FNAME,LNAME
+                  FROM EMPLOYEE
+                  WHERE NOT EXISTS (SELECT *
+                                                          FROM DEPENDENT
+                                                          WHERE SSN=ESSN);
+//e//
+SQL> SELECT FNAME, LNAME, ADDRESS
+            FROM EMPLOYEE, DEPARTMENT
+            WHERE DNAME=’RESEARCH’ AND DNUMBER=DNO
+
+//f//
+SQL> SELECT D.DNAME, E.LNAME, E.FNAME, P.PNAME
+FROM DEPARTMENT D, EMPLOYEE E, WORKS_ON W, PROJECT P
+WHERE D.DNUMBER= E.DNO AND E.SSN= W.ESSN AND  W.PNO= P.PNUMBER
+ORDER BY D.DNAME, E.LNAME, E.FNAME;
+
+//g//
+ SQL>CREATE VIEW DEPT_INFO(Dept_name, No_of_emps, Total_sal)
+          AS SELECT DNAME, COUNT (*), SUM (Salary)
+          FROM DEPARTMENT, EMPLOYEE 
+          WHERE DNUMBER=DNO
+          GROUP BY DNAME;
+
